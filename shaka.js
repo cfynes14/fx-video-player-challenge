@@ -39,7 +39,16 @@ async function shakaInitPlayer(manifestUri) {
     player.addEventListener('error', shakaOnErrorEvent);
 
     // Listen for timeupdates here to update UI time
-    // ...
+    const durationEl = document.querySelector(".video-time--duration")
+    const currentTimeEl = document.querySelector(".video-time--currentTime")
+
+    video.addEventListener('timeupdate', (event) => {
+        const currentTime = video.currentTime
+        const duration = video.duration
+        currentTimeEl.innerHTML = parseTime(currentTime)
+        const remainingTime = duration - currentTime
+        durationEl.innerHTML = parseTime(remainingTime)
+    })
 
     // set config
     player.configure(shakaConfig);
@@ -55,9 +64,10 @@ async function shakaInitPlayer(manifestUri) {
         getSubtitleTracks();
 
         // pull audio tracks
-        // ...
+        getAudioTracks()
 
         // set progress bar duration
+        
         setProgressBar();
     } catch (e) {
         alert(e);
@@ -97,16 +107,30 @@ function getSubtitleTracks() {
     })
 }
 
-function getAudioTracks() {
-    // get available audio tracks from Shaka
+async function getAudioTracks() {
+    // get audio tracks from shaka
+    const audioTracks = await player.getAudioLanguages();
 
-    // select default language
+    // select default
+    const englishAudio = audioTracks.includes("en");
 
     // set Shaka default audioTrack
-
+    if (englishAudio) {
+        player.selectAudioLanguage("en")
+    };
     // add audio options to UI
-}
+    const audioWrapper = document.querySelector(".video-container__audio-tracks")
+    audioTracks.map(language => {
+        let item = document.createElement("div");
+        item.className = "audio-track";
+        item.innerText = language;
+        audioWrapper.appendChild(item);
+        item.addEventListener("click", ({ target }) => {
+            player.selectAudioLanguage(target.innerHTML)
+        })
 
+    })
+}
 function renderSubtitle(activeCues) {
     if (activeCues[0]?.text) {
         document.querySelector(".video-container__subtitles").innerText = activeCues[0].text;

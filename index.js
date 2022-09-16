@@ -12,6 +12,7 @@ async function initPlayer() {
     
         manifestUri = 'https://storage.googleapis.com/shaka-demo-assets/angel-one/dash.mpd';
         shakaInitPlayer(manifestUri);
+
     } catch (e) {
         alert(e);
     }
@@ -23,7 +24,7 @@ function loadPlayer() {
         initPlayer();
     } else {
         alert("Player already loaded");
-    }
+    } 
 }
 
 function pausePlay() {
@@ -32,6 +33,8 @@ function pausePlay() {
     } else {
         video.pause();
     }
+    console.log("TIME", parseTime(video.duration))
+
 }
 
 function destroyPlayer() {
@@ -69,9 +72,10 @@ destroyBtn.addEventListener("click", () => {
 });
 
 rewindBtn.addEventListener("click", () => {
-
+    video.currentTime -= 5
 });
 
 ffBtn.addEventListener("click", () => {
-    
+    video.currentTime += 5
 });
+
